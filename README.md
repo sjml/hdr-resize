@@ -28,3 +28,10 @@ OPTIONS:
 * Only handles HEIC and JPEG images (both input and output).
 * Only handles HDR images; if you try to load a file that does not have a gain map, it will throw an error. 
 * Note that even on lower qualities it doesn't seem to be as aggressive as, say ImageMagick; I care more about preserving quality so this isn't an issue for me, but if you're keen to squeeze out compression maximization, this may not be the tool for you. (I think it's because of how Apple's image libraries work, but unsure.)
+
+## References
+* [Apple documentation, which leaves a lot out](https://developer.apple.com/documentation/appkit/applying-apple-hdr-effect-to-your-photos)
+* Two posts from JuniperPhoto explaining how to extract existing gain map data and calculate the headroom, etc. 
+  * https://juniperphoton.substack.com/p/process-apple-gain-map-the-imageio
+  * https://juniperphoton.substack.com/p/decoding-some-hidden-magic-of-makerapple
+  * (I don't actually do any manipulation of the gain map other than resizing it, it so no need to recalculate its meta values, but these posts explain how to do that just in case it ever comes up, and I don't want to have to search for them again)
