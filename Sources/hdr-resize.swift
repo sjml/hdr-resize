@@ -94,16 +94,19 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 		colorSpace: nil
 	)
 
-	let orientationRaw = (metadata as? [String: Any])?[kCGImagePropertyOrientation as String] as? UInt32
+	let gainMap = gainMapBase
 
-	if orientationRaw == nil {
-		fputs("WARNING: No orientation metadata found. Assuming \"up\".\n", stderr)
-	}
-	let orientation = CGImagePropertyOrientation(rawValue: orientationRaw ?? 1) ?? {
-		fputs("WARNING: Invalid orientation value \(orientationRaw!). Assuming \"up\".\n", stderr)
-		return .up
-	}()
-	let gainMap = gainMapBase.oriented(orientation)
+	// documentation indicates that the gain map should have orientation applied to it, but
+	//   empirically that seems to not be true? leaving this here in case it has to come back
+	// let orientationRaw = (metadata as? [String: Any])?[kCGImagePropertyOrientation as String] as? UInt32
+	// if orientationRaw == nil {
+	// 	fputs("WARNING: No orientation metadata found. Assuming \"up\".\n", stderr)
+	// }
+	// let orientation = CGImagePropertyOrientation(rawValue: orientationRaw ?? 1) ?? {
+	// 	fputs("WARNING: Invalid orientation value \(orientationRaw!). Assuming \"up\".\n", stderr)
+	// 	return .up
+	// }()
+	// let gainMap = gainMapBase.oriented(orientation)
 
 	guard let resizedMain = resizeCGImage(img, to: targetSize) else {
 		throw HDRResizeError.resizeFailed

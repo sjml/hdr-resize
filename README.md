@@ -24,3 +24,5 @@ OPTIONS:
 * It has not been fully tested with a wide variety of images, different orientations, etc.
   * Any bugs that emerge from that kind of diversity should be fairly easy to spot and figure out, though.
 * I built this on an M1 Mac running Sequoia 15.5 with Swift 6.1.2. No idea if it builds on older versions of Swift/macOS, Intel, etc. 
+* Only handles HEIC and JPEG images (both input and output).
+* Only handles HDR images; if you try to load a file that does not have a gain map, it will throw an error. 
