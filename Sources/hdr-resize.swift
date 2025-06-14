@@ -122,7 +122,9 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 
 	let gmWidth = resizedMain.width / 2
 	let gmHeight = resizedMain.height / 2
-	let gmBPR = gmWidth * 1 // .L8 is just a single byte per pixel
+	let gmBytesPerPoxel = 1 // just one for .L8
+	let unalignedRowBytes = gmWidth * gmBytesPerPoxel
+	let gmBPR = (unalignedRowBytes + 3) & ~3 // round up to next multiple of 4
 	let resizedGainMap = resizeCIImage(gainMap, to: CGSize(width: gmWidth, height: gmHeight))
 	var gmData = Data(count: gmBPR * gmHeight)
 
@@ -150,7 +152,7 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 
 	var outMeta = metadata
 	if var md = metadata as? [String: Any] {
-		md[kCGImageDestinationLossyCompressionQuality as String] = (Float(quality) / 100.0) as CFNumber
+		// md[kCGImageDestinationLossyCompressionQuality as String] = (Float(quality) / 100.0) as CFNumber
 		outMeta = md as CFDictionary
 	}
 	try writeImage(resizedMain, to: outputUrl, auxiliary: modifiedGainMapRaw as CFDictionary, properties: outMeta)
