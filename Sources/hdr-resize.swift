@@ -152,7 +152,7 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 
 	var outMeta = metadata
 	if var md = metadata as? [String: Any] {
-		// md[kCGImageDestinationLossyCompressionQuality as String] = (Float(quality) / 100.0) as CFNumber
+		md[kCGImageDestinationLossyCompressionQuality as String] = (Float(quality) / 100.0) as CFNumber
 		outMeta = md as CFDictionary
 	}
 	try writeImage(resizedMain, to: outputUrl, auxiliary: modifiedGainMapRaw as CFDictionary, properties: outMeta)
