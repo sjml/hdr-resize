@@ -9,6 +9,7 @@ enum HDRResizeError: Error {
 	case invalidArguments
 	case invalidTargetSize
 	case loadFailed
+	case invalidQuality
 	case gainMapLoadFailed
 	case resizeFailed
 	case unsupportedFormat
@@ -47,9 +48,16 @@ struct HDRResize: ParsableCommand {
 	@Option(name: .shortAndLong, help: "Desired size in the format WxH, Wx, or xH")
 	var sizeString: String
 
+	@Option(name: .shortAndLong, help: "Output image quality (0-100)")
+	var quality: Int = 85
+
 	func run() throws {
 		let inputURL = URL(filePath: input)
 		let outputURL = URL(filePath: output)
+
+		if quality < 0 || quality > 100 {
+			throw HDRResizeError.invalidQuality
+		}
 
 		guard let imgSrc = CGImageSourceCreateWithURL(inputURL as CFURL, nil) else {
 			throw HDRResizeError.loadFailed
@@ -68,11 +76,11 @@ struct HDRResize: ParsableCommand {
 			targetSize.height = targetSize.width / aspect
 		}
 
-		try performResize(img: cgImg, imgSrc: imgSrc, targetSize: targetSize, outputUrl: outputURL)
+		try performResize(img: cgImg, imgSrc: imgSrc, targetSize: targetSize, outputUrl: outputURL, quality: quality)
 	}
 }
 
-func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outputUrl: URL) throws {
+func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outputUrl: URL, quality: Int) throws {
 	let metadata = CGImageSourceCopyPropertiesAtIndex(imgSrc, 0, nil)
 
 	guard let gainMapRaw = CGImageSourceCopyAuxiliaryDataInfoAtIndex(imgSrc, 0, kCGImageAuxiliaryDataTypeHDRGainMap) as? [CFString: Any],
@@ -140,7 +148,12 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 	modifiedGainMapRaw[kCGImageAuxiliaryDataInfoData] = gmData
 	modifiedGainMapRaw[kCGImageAuxiliaryDataInfoDataDescription] = modifiedGainMapData
 
-	try writeImage(resizedMain, to: outputUrl, auxiliary: modifiedGainMapRaw as CFDictionary, properties: metadata)
+	var outMeta = metadata
+	if var md = metadata as? [String: Any] {
+		md[kCGImageDestinationLossyCompressionQuality as String] = (Float(quality) / 100.0) as CFNumber
+		outMeta = md as CFDictionary
+	}
+	try writeImage(resizedMain, to: outputUrl, auxiliary: modifiedGainMapRaw as CFDictionary, properties: outMeta)
 }
 
 func resizeCIImage(_ image: CIImage, to size: CGSize) -> CIImage {
