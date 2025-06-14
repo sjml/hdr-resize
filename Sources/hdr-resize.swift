@@ -12,6 +12,7 @@ enum HDRResizeError: Error {
 	case invalidQuality
 	case gainMapLoadFailed
 	case resizeFailed
+	case encodingFailed
 	case unsupportedFormat
 	case writeFailed
 }
@@ -39,23 +40,23 @@ func parseSizeString(_ str: String) throws -> CGSize {
 
 @main
 struct HDRResize: ParsableCommand {
-	@Option(name: .shortAndLong, help: "Path to the input image", completion: .file(extensions: [".jpeg", ".jpg", ".heic"]))
+	@Option(name: .shortAndLong, help: "Path to input image", completion: .file(extensions: [".jpeg", ".jpg", ".heic"]))
 	var input: String
 
-	@Option(name: .shortAndLong, help: "Path to the output image")
+	@Option(name: .shortAndLong, help: "Path to output image")
 	var output: String
 
-	@Option(name: .shortAndLong, help: "Desired size in the format WxH, Wx, or xH")
+	@Option(name: .shortAndLong, help: "Target size in WxH, Wx, or xH")
 	var sizeString: String
 
-	@Option(name: .shortAndLong, help: "Output image quality (0-100)")
+	@Option(name: .shortAndLong, help: "Output image quality (1-100)")
 	var quality: Int = 85
 
 	func run() throws {
 		let inputURL = URL(filePath: input)
 		let outputURL = URL(filePath: output)
 
-		if quality < 0 || quality > 100 {
+		if quality < 1 || quality > 100 {
 			throw HDRResizeError.invalidQuality
 		}
 
@@ -129,8 +130,10 @@ func performResize(img: CGImage, imgSrc: CGImageSource, targetSize: CGSize, outp
 	var gmData = Data(count: gmBPR * gmHeight)
 
 	let ctx = CIContext()
-	gmData.withUnsafeMutableBytes { buffer in
-		guard let base = buffer.baseAddress else { return }
+	try gmData.withUnsafeMutableBytes { buffer in
+		guard let base = buffer.baseAddress else {
+			throw HDRResizeError.encodingFailed
+		}
 		ctx.render(
 			resizedGainMap,
 			toBitmap: base,

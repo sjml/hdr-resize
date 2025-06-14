@@ -27,7 +27,7 @@ OPTIONS:
 * I built this on an M1 Mac running Sequoia 15.5 with Swift 6.1.2. No idea if it builds on older versions of Swift/macOS, Intel, etc. 
 * Only handles HEIC and JPEG images (both input and output).
 * Only handles HDR images; if you try to load a file that does not have a gain map, it will throw an error. 
-* Note that even on lower qualities it doesn't seem to be as aggressive as, say ImageMagick; I care more about preserving quality so this isn't an issue for me, but if you're keen to squeeze out compression maximization, this may not be the tool for you. (I think it's because of how Apple's image libraries work, but unsure.)
+* Note that on lower quality settings the compression doesn't seem to be as aggressive as, say ImageMagick's; I care more about preserving quality so this isn't an issue for me, but if you're keen to squeeze out compression maximization, this may not be the tool for you. (I think it's because of how Apple's image libraries work, but unsure.)
 
 ## References
 * [Apple documentation, which leaves a lot out](https://developer.apple.com/documentation/appkit/applying-apple-hdr-effect-to-your-photos)
