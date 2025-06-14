@@ -23,4 +23,4 @@ OPTIONS:
 * It assumes that the gain map is half-resolution of the image, which seems to be the standard
 * It has not been fully tested with a wide variety of images, different orientations, etc.
   * Any bugs that emerge from that kind of diversity should be fairly easy to spot and figure out, though.
-
+* I built this on an M1 Mac running Sequoia 15.5 with Swift 6.1.2. No idea if it builds on older versions of Swift/macOS, Intel, etc. 
