@@ -32,6 +32,9 @@ OPTIONS:
 ## References
 * [Apple documentation, which leaves a lot out](https://developer.apple.com/documentation/appkit/applying-apple-hdr-effect-to-your-photos)
 * [The proposed ISO standard](https://www.iso.org/standard/86775.html)
+* [ImageMagick issue about integrating gain map support](https://github.com/ImageMagick/ImageMagick/issues/6377) (lots of good references in there, too)
+  * indicates there *should* be ways of getting ImageMagick to work with gain maps, but I was never able to do it, and the flags are not documented
+* [Google's libultrahdr](https://github.com/google/libultrahdr) which looks promising but also very low-level
 * Two posts from JuniperPhoton explaining how to extract existing gain map data and calculate the headroom, etc. 
   * https://juniperphoton.substack.com/p/process-apple-gain-map-the-imageio
   * https://juniperphoton.substack.com/p/decoding-some-hidden-magic-of-makerapple
